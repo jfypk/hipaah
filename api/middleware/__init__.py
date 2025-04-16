@@ -1,0 +1,1 @@
+# Auth, screenshot mode, etc.
