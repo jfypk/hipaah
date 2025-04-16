@@ -1,3 +1,14 @@
 {
-    "comment": "Example data schema"
+  "title": "Patient Record Schema",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "dob": { "type": "string", "format": "date" },
+    "diagnosis": { "type": "string" },
+    "medications": { "type": "array", "items": { "type": "string" } },
+    "insurance_number": { "type": "string" },
+    "appointment_time": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "required": ["name", "dob"]
 }

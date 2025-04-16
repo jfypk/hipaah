@@ -1,1 +1,28 @@
-# Example YAML access policy
+- role: receptionist
+  intent: treatment
+  allow:
+    - name
+    - dob
+    - appointment_time
+  deny:
+    - diagnosis
+    - insurance_number
+    - notes
+
+- role: nurse
+  attributes:
+    department: cardiology
+    requires_active_shift: true
+  intent: treatment
+  allow:
+    - name
+    - dob
+    - diagnosis
+    - medications
+  deny:
+    - insurance_number
+
+- justification_required:
+    role: nurse
+    fields: ["notes"]
+    duration_minutes: 15
