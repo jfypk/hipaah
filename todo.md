@@ -52,53 +52,53 @@
 
 ---
 
-## 📁 Proposed Directory Structure
+## 📁 Current Directory Structure
 
 ```plaintext
-hipaah/
-│
-├── api/                        # FastAPI app
-│   ├── main.py                # Entry point
-│   ├── routes/                # All API endpoints
-│   └── middleware/            # Justification, Screenshot Mode, etc.
-│
-├── core/                      # Business logic
-│   ├── engine.py              # Policy evaluator
-│   ├── policy_loader.py       # Loads YAML/JSON policies
-│   ├── schema.py              # Field-level schema definitions
-│   └── fhir_adapter.py        # FHIR field mapper (optional)
-│
-├── sdk/                       # SDKs
-│   ├── python/hipaah/         # Python SDK
-│   └── js/hipaah/             # JS SDK
-│
-├── utils/
-│   ├── logger.py              # SafeLogger w/ masking
-│   ├── mask.py                # Redaction + field masking
-│   └── synthetic_data.py      # Faker-based screenshot data
-│
-├── cli/                       # CLI interface
-│   └── cli.py                 # Policy testing, screenshot mode toggle, etc.
-│
-├── config/
-│   ├── sample_policies/       # Starter YAML/JSON policies
-│   └── schemas/               # Supported field models (e.g., patient_record.json)
-│
-├── data/                      # Logs, audit trails
+.
+├── config
+│   ├── sample_policies      # Sample policy files
+│   │   └── example_policy.yaml
+│   └── schemas             # JSON schemas for data structures
+│       └── patient_record.json
+├── CONTRIBUTING.md
+├── data                    # Audit logs
 │   ├── access_log.jsonl
 │   └── justification_log.jsonl
-│
-├── tests/                     # Unit & integration tests
-│
-├── docs/                      # Markdown docs
-│   ├── README.md
-│   ├── CONTRIBUTING.md
-│   ├── architecture.md
-│   └── compliance-model.md
-│
-├── .env.example               # Sample config for screenshot mode, etc.
-├── pyproject.toml             # Poetry / pip project config
-└── Dockerfile                 # Containerize it for easy deployment
+├── Dockerfile              # Containerize it for easy deployment
+├── hipaah
+│   ├── __init__.py
+│   ├── api                 # FastAPI server
+│   │   ├── main.py
+│   │   ├── middleware
+│   │   └── routes
+│   ├── cli                 # Command line tool 
+│   │   └── cli.py
+│   ├── core                # Policy engine & evaluators
+│   │   ├── engine.py
+│   │   ├── policy_loader.py
+│   │   └── types.py
+│   ├── sdk                 # Python + JS SDKs
+│   │   ├── js             # JavaScript SDK
+│   │   └── python         # Python SDK
+│   └── utils               # Log masking, fake data, etc.
+│       ├── logger.py       # SafeLogger w/ masking
+│       ├── mask.py         # Redaction + field masking
+│       └── synthetic_data.py # Faker-based screenshot data
+├── LICENSE
+├── poetry.lock
+├── pyproject.toml          # Poetry / pip project config
+├── README.md
+├── TAXONOMY.md
+├── tests                   # Unit & integration tests
+│   ├── conftest.py
+│   ├── core
+│   │   └── test_engine.py
+│   └── utils
+│       ├── test_logger.py
+│       ├── test_mask.py
+│       └── test_synthetic_data.py
+└── todo.md
 ```
 
 ---

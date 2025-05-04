@@ -231,15 +231,41 @@ synthetic_patient = generate_demo_patient()
 ## 🛠️ Project Layout
 
 ```plaintext
-hipaah/
-├── api/              # FastAPI server
-├── core/             # Policy engine & evaluators
-├── sdk/              # Python + JS SDKs
-├── cli/              # Command line tool
-├── utils/            # Log masking, fake data, etc.
-├── config/           # Sample policies & schemas
-├── data/             # Audit logs
-└── tests/            # Unit & integration tests
+.
+├── config
+│   ├── sample_policies      # Sample policy files
+│   │   └── example_policy.yaml
+│   └── schemas             # JSON schemas for data structures
+│       └── patient_record.json
+├── data                    # Audit logs
+│   ├── access_log.jsonl
+│   └── justification_log.jsonl
+├── hipaah
+│   ├── __init__.py
+│   ├── api                 # FastAPI server
+│   │   ├── main.py
+│   │   ├── middleware
+│   │   └── routes
+│   ├── cli                 # Command line tool
+│   │   └── cli.py
+│   ├── core                # Policy engine & evaluators
+│   │   ├── engine.py
+│   │   ├── policy_loader.py
+│   │   └── types.py
+│   ├── sdk                 # Python + JS SDKs
+│   │   ├── js
+│   │   └── python
+│   └── utils               # Log masking, fake data, etc.
+│       ├── logger.py
+│       ├── mask.py
+│       └── synthetic_data.py
+└── tests                   # Unit & integration tests
+    ├── core
+    │   └── test_engine.py
+    └── utils
+        ├── test_logger.py
+        ├── test_mask.py
+        └── test_synthetic_data.py
 ```
 
 ---
