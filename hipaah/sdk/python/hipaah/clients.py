@@ -40,10 +40,11 @@ class HipaahClient:
             resource: The resource to evaluate
             role: The user role
             intent: The access intent
-            attributes: Optional attributes for policy evaluation
+            attributes: Optional attributes for policy evaluation. If includes 'justification',
+                        and policy has 'justification_ttl', the result will include expiry time
             
         Returns:
-            The result of policy evaluation
+            The result of policy evaluation with optional expiry metadata
         """
         if not self.policies:
             raise ValueError("No policies loaded. Call load_policy first.")
@@ -56,8 +57,40 @@ class HipaahClient:
         )
         
         result = evaluate_policy(request, self.policies)
+        
+        # Log justification if provided
+        if attributes and attributes.get("justification"):
+            justification = attributes.get("justification")
+            resource_id = str(resource.get("id", "unknown"))
+            self.logger.info(
+                f"Justification provided for {role}/{intent}",
+                {"justification": justification, "resource_id": resource_id}
+            )
+            
+            # Check if we have time-limited access
+            if "_meta" in result and "expires_at" in result["_meta"]:
+                expires_at = result["_meta"]["expires_at"]
+                self.logger.info(
+                    f"Time-limited access granted until {expires_at}",
+                    {"role": role, "intent": intent, "resource_id": resource_id}
+                )
+        
         self.logger.info(f"Policy evaluation for {role}/{intent}", {"result": "success"})
         return result
+        
+    def _evaluate_policy(self, request, policies):
+        """Internal method to evaluate policies using the evaluate_policy function.
+        
+        This method is called by evaluate() and is exposed for testing purposes.
+        
+        Args:
+            request: PolicyRequest object with role, intent, attributes, and resource
+            policies: List of policies to evaluate against
+            
+        Returns:
+            The result of policy evaluation
+        """
+        return evaluate_policy(request, policies)
     
     def batch_evaluate(self, resources, role, intent, attributes=None):
         """Evaluate multiple resources against loaded policies.

@@ -1,6 +1,9 @@
 import pytest
-from hipaah.core.engine import evaluate, MASKED
+import datetime
+import re
+from hipaah.core.engine import evaluate, evaluate_policy, MASKED
 from hipaah.core.policy_loader import Policy
+from hipaah.core.types import PolicyRequest
 
 
 class TestEngine:
@@ -178,3 +181,144 @@ class TestEngine:
         )
         
         assert result == expected
+        
+    def test_time_limited_justification(self, sample_resource):
+        """Test that justification_ttl creates time-limited access with expiry."""
+        # Create a policy with justification_ttl
+        policies = [
+            Policy(
+                role="billing_admin",
+                intent="billing",
+                allow=["name", "insurance_number"],
+                mask=["diagnosis"],
+                deny=[],
+                conditions={},
+                justification_ttl=60  # 60 minute expiry
+            )
+        ]
+        
+        # Evaluate with justification
+        result = evaluate(
+            resource=sample_resource,
+            role="billing_admin",
+            intent="billing",
+            attributes={"justification": "Monthly billing review"},
+            policies=policies
+        )
+        
+        # Verify metadata with expiry is added
+        assert "_meta" in result
+        assert "expires_at" in result["_meta"]
+        
+        # Verify the expiry is in the future and formatted as ISO datetime
+        expires_at = result["_meta"]["expires_at"]
+        assert re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', expires_at)
+        
+        # Expiry should be about 60 minutes in the future (allow small variation for test time)
+        expires_datetime = datetime.datetime.fromisoformat(expires_at)
+        now = datetime.datetime.now()
+        delta = expires_datetime - now
+        assert 59 <= delta.total_seconds() / 60 <= 61
+        
+    def test_evaluate_policy_function(self, sample_resource):
+        """Test the evaluate_policy function wrapper."""
+        # Create a policy with justification_ttl
+        policies = [
+            Policy(
+                role="billing_admin",
+                intent="billing",
+                allow=["name", "insurance_number"],
+                mask=["diagnosis"],
+                deny=[],
+                conditions={},
+                justification_ttl=60
+            )
+        ]
+        
+        # Test with PolicyRequest object
+        request = PolicyRequest(
+            role="billing_admin",
+            intent="billing",
+            attributes={"justification": "Monthly billing review"},
+            resource=sample_resource
+        )
+        
+        result = evaluate_policy(request, policies)
+        
+        # Verify results
+        assert result["name"] == sample_resource["name"]
+        assert result["insurance_number"] == sample_resource["insurance_number"]
+        assert result["diagnosis"] == MASKED
+        assert "_meta" in result
+        assert "expires_at" in result["_meta"]
+        
+        # Test with dictionary input
+        request_dict = {
+            "role": "billing_admin",
+            "intent": "billing",
+            "attributes": {"justification": "Monthly billing review"},
+            "resource": sample_resource
+        }
+        
+        result = evaluate_policy(request_dict, policies)
+        
+        # Verify same results with dictionary input
+        assert result["name"] == sample_resource["name"]
+        assert result["insurance_number"] == sample_resource["insurance_number"]
+        assert result["diagnosis"] == MASKED
+        assert "_meta" in result
+        assert "expires_at" in result["_meta"]
+        
+    def test_justification_without_ttl(self, sample_resource):
+        """Test that justification without TTL doesn't add expiry metadata."""
+        # Create a policy without justification_ttl
+        policies = [
+            Policy(
+                role="nurse",
+                intent="treatment",
+                allow=["name", "diagnosis"],
+                mask=["insurance_number"],
+                deny=[],
+                conditions={},
+                # No justification_ttl
+            )
+        ]
+        
+        # Evaluate with justification
+        result = evaluate(
+            resource=sample_resource,
+            role="nurse",
+            intent="treatment",
+            attributes={"justification": "Patient assessment"},
+            policies=policies
+        )
+        
+        # Should not add _meta data since no TTL defined
+        assert "_meta" not in result
+        
+    def test_policy_with_ttl_but_no_justification(self, sample_resource):
+        """Test that TTL without justification doesn't add expiry metadata."""
+        # Create a policy with justification_ttl
+        policies = [
+            Policy(
+                role="billing_admin",
+                intent="billing",
+                allow=["name", "insurance_number"],
+                mask=["diagnosis"],
+                deny=[],
+                conditions={},
+                justification_ttl=60
+            )
+        ]
+        
+        # Evaluate without justification
+        result = evaluate(
+            resource=sample_resource,
+            role="billing_admin",
+            intent="billing",
+            attributes={},  # No justification
+            policies=policies
+        )
+        
+        # Should not add _meta data since no justification provided
+        assert "_meta" not in result

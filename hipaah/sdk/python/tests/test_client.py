@@ -1,8 +1,10 @@
 import pytest
 import os
 import json
+import datetime
+import re
 from unittest.mock import patch, MagicMock
-from hipaah import HipaahClient, PolicyRequest
+from hipaah import HipaahClient, PolicyRequest, SafeLogger
 
 # Define constants
 MASKED = "***"
@@ -100,17 +102,78 @@ class TestHipaahClient:
         """Test policy evaluation with justification."""
         client = HipaahClient(policy_file)
         
+        # Mock the logger to verify it's called with justification info
+        mock_logger = MagicMock()
+        client.logger = mock_logger
+        
+        justification = "Monthly billing review"
+        
         # Test with billing_admin which has justification_ttl
         result = client.evaluate(
             sample_resource, 
             "billing_admin", 
             "billing", 
-            {"justification": "Monthly billing review"}
+            {"justification": justification}
         )
         
         # Should have meta data with expiry
         assert "_meta" in result
         assert "expires_at" in result.get("_meta", {})
+        
+        # Verify logger was called with justification info
+        mock_logger.info.assert_any_call(
+            "Justification provided for billing_admin/billing",
+            {"justification": justification, "resource_id": "unknown"}
+        )
+        
+        # Verify the time-limited access was logged
+        expires_at = result["_meta"]["expires_at"]
+        mock_logger.info.assert_any_call(
+            f"Time-limited access granted until {expires_at}",
+            {"role": "billing_admin", "intent": "billing", "resource_id": "unknown"}
+        )
+        
+    def test_evaluate_with_justification_and_resource_id(self, policy_file, sample_resource):
+        """Test policy evaluation with justification and resource ID."""
+        client = HipaahClient(policy_file)
+        
+        # Mock the logger to verify it's called with resource_id
+        mock_logger = MagicMock()
+        client.logger = mock_logger
+        
+        # Add resource ID to the sample resource
+        sample_resource_with_id = {**sample_resource, "id": "P12345"}
+        
+        justification = "Monthly billing review"
+        
+        # Test with billing_admin which has justification_ttl
+        result = client.evaluate(
+            sample_resource_with_id, 
+            "billing_admin", 
+            "billing", 
+            {"justification": justification}
+        )
+        
+        # Verify logger was called with correct resource_id
+        mock_logger.info.assert_any_call(
+            "Justification provided for billing_admin/billing",
+            {"justification": justification, "resource_id": "P12345"}
+        )
+        
+    def test_evaluate_without_justification_ttl(self, policy_file, sample_resource):
+        """Test policy evaluation with justification but no TTL in policy."""
+        client = HipaahClient(policy_file)
+        
+        # Test with nurse which doesn't have justification_ttl
+        result = client.evaluate(
+            sample_resource, 
+            "nurse", 
+            "treatment", 
+            {"justification": "Patient follow-up"}
+        )
+        
+        # Should not have meta data with expiry since nurse policy has no TTL
+        assert "_meta" not in result
     
     def test_evaluate_non_existent_policy(self, policy_file, sample_resource):
         """Test policy evaluation with non-existent policy."""

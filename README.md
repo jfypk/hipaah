@@ -29,60 +29,120 @@ HIPAah solves all of that by giving you:
 
 ## 🧠 Example Use Case
 
-A nurse requests a patient record. The app calls HIPAah:
+Your application has a billing admin who needs temporary access to a patient's insurance information:
 
-```json
-{
-  "role": "nurse",
-  "intent": "treatment",
-  "requested_fields": ["name", "dob", "diagnosis", "insurance_number"],
-  "attributes": { "department": "oncology" },
-  "justification": "Assisting attending physician"
-}
+```javascript
+// Patient record with sensitive PHI
+const patientRecord = {
+  id: "P12345",
+  name: "Lisa Chang",
+  dob: "1983-09-22",
+  diagnosis: "Asthma",
+  medications: ["Albuterol", "Fluticasone"],
+  insurance_number: "123-45-6789",
+  notes: "Patient reports increased shortness of breath"
+};
+
+// Create a HIPAah client with your policies
+const { HipaahClient, SafeLogger } = require('hipaah');
+const client = new HipaahClient('config/sample_policies/example_policy.yaml');
+const logger = new SafeLogger(["diagnosis", "insurance_number", "notes"]);
+
+// Request access with time-limited justification
+const filteredRecord = client.evaluate(
+  patientRecord,
+  "billing_admin",
+  "billing",
+  { justification: "Monthly insurance claim processing" }
+);
+
+console.log(filteredRecord);
+// Output:
+// {
+//   name: "Lisa Chang",
+//   dob: "1983-09-22",
+//   insurance_number: "123-45-6789",
+//   billing_codes: ["J45.909", "Z79.51"],
+//   diagnosis: "***",
+//   notes: "***",
+//   _meta: {
+//     expires_at: "2023-05-15T15:30:00.000Z"  // Access expires in 60 minutes
+//   }
+// }
+
+// Safely log the access with justification
+logger.justification(
+  "billing_admin", 
+  "billing", 
+  "P12345", 
+  "Monthly insurance claim processing",
+  filteredRecord._meta.expires_at
+);
 ```
 
-HIPAah responds:
+The same functionality is available in the Python SDK:
 
-```json
-{
-  "allow": ["name", "dob"],
-  "mask": ["diagnosis", "insurance_number"],
-  "expires_at": "2025-04-15T12:30:00Z"
-}
+```python
+from hipaah import HipaahClient, SafeLogger
+
+# Create client and logger
+client = HipaahClient("config/sample_policies/example_policy.yaml")
+logger = SafeLogger(masked_fields=["diagnosis", "insurance_number"])
+
+# Evaluate with justification
+billing_view = client.evaluate(
+    resource=patient_record,
+    role="billing_admin",
+    intent="billing",
+    attributes={"justification": "Monthly insurance claim processing"}
+)
+
+# Access expires after the time specified in the policy
+expires_at = billing_view.get("_meta", {}).get("expires_at")
+print(f"Access granted until: {expires_at}")
+
+# Log the justification
+logger.justification(
+    role="billing_admin",
+    intent="billing",
+    resource_id=patient_record["id"],
+    justification="Monthly insurance claim processing",
+    expires_at=expires_at
+)
 ```
 
-The frontend masks restricted fields and logs the access — safely, with zero PHI exposure.
+HIPAah enforces proper access control while maintaining an audit trail of all justified access to sensitive PHI.
 
 ---
 
 ## 🧩 Core Features
 
 ### 🔐 Access Control
-- [] Role-Based Access Control (RBAC)
-- [] Attribute-Based Access Control (ABAC)
-- [] Intent-based access scopes
-- [] Time-limited justifications
+- [x] Role-Based Access Control (RBAC)
+- [x] Attribute-Based Access Control (ABAC)
+- [x] Intent-based access scopes
+- [x] Time-limited justifications
 
 ### 🧱 Developer Tools
-- [] YAML/JSON policy files
-- [] FastAPI-based PDP API
-- [] Python + JS SDKs
-- [] CLI to test and manage policies
+- [x] YAML/JSON policy files
+- [ ] FastAPI-based PDP API (in progress)
+- [x] Python + JS SDKs
+- [ ] CLI to test and manage policies (in progress)
 
 ### 📜 Audit + Logs
-- [] Redacting logger
-- [] Immutable audit log
-- [] Role-based log viewer (WIP)
+- [x] Redacting logger
+- [x] Immutable audit log
+- [ ] Role-based log viewer (planned)
 
 ### 🤖 AI + LLM Integration
-- [] PHI masking for prompts
-- [] Response scrubber
-- [] OpenAI proxy (WIP)
+- [x] PHI masking for prompts
+- [x] Response scrubber
+- [ ] OpenAI proxy (planned)
 
 ### 🖼️ Screenshot Mode
-- [] Toggle for fake-PHI display
-- [] Synthetic data generation (Faker-based)
-- [] Visual watermarking
+- [x] Toggle for fake-PHI display
+- [x] Synthetic data generation (using built-in generator)
+- [x] Visual watermarking
 
 ---
 
@@ -93,13 +153,77 @@ git clone https://github.com/YOUR_USERNAME/hipaah.git
 cd hipaah
 poetry install
 cp .env.example .env
-uvicorn api.main:app --reload
+uvicorn hipaah.api.main:app --reload
 ```
 
-To try the CLI:
+To try the CLI (when available):
 
 ```bash
 poetry run hipaah --help
+```
+
+### Using the JavaScript SDK
+
+```javascript
+const { HipaahClient, SafeLogger, maskPhiFields, generateSyntheticData } = require('hipaah');
+
+// Create a client instance with the policy file
+const client = new HipaahClient('path/to/policy.yaml');
+
+// 1. Policy evaluation
+const filteredData = client.evaluate(
+  patientData,
+  "nurse",
+  "treatment",
+  { department: "oncology" }
+);
+
+// 2. Safe logging
+const logger = new SafeLogger(["diagnosis", "insurance_number"]);
+logger.info("Filtered patient data", filteredData);
+
+// 3. Batch processing
+const batchResults = client.batchEvaluate(patientRecords, "billing_admin", "billing", {});
+
+// 4. Mask specific PHI fields in any data structure
+const maskedData = maskPhiFields(patientData, ["diagnosis", "insurance_number"]);
+
+// 5. Generate synthetic data for screenshots/demos
+const syntheticPatient = generateSyntheticData({
+  name: "",
+  dob: "",
+  diagnosis: "",
+  insurance_number: ""
+}, true); // true adds watermark
+```
+
+### Using the Python SDK
+
+```python
+from hipaah import HipaahClient, SafeLogger
+from hipaah.utils.mask import mask_data, mask_phi_patterns
+from hipaah.utils.synthetic_data import generate_demo_patient
+
+# 1. Create a client with policy
+client = HipaahClient(policy_path="path/to/policy.yaml")
+
+# 2. Evaluate access
+result = client.evaluate(
+    resource=patient_data,
+    role="doctor",
+    intent="treatment",
+    attributes={"department": "cardiology"}
+)
+
+# 3. Safe logging
+logger = SafeLogger(masked_fields=["diagnosis", "insurance_number"])
+logger.info("Access granted", {"user_role": "doctor", "resource_id": patient_id})
+
+# 4. Mask PHI in text
+redacted_notes = mask_phi_patterns(patient_notes)
+
+# 5. Generate synthetic data for screenshots
+synthetic_patient = generate_demo_patient()
 ```
 
 ---
@@ -115,18 +239,18 @@ hipaah/
 ├── utils/            # Log masking, fake data, etc.
 ├── config/           # Sample policies & schemas
 ├── data/             # Audit logs
-└── docs/             # Documentation
+└── tests/            # Unit & integration tests
 ```
 
 ---
 
 ## 💬 Community + Contributing
 
-We’re just getting started and **we’d love your help**.
+We're just getting started and **we'd love your help**.
 
 - Star ⭐ the repo
 - File issues / feature requests
-- PRs welcome! See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+- PRs welcome! See [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ---
 
