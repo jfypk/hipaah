@@ -38,3 +38,4 @@
   mask:
     - diagnosis
     - notes
+  justification_ttl: 60

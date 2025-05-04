@@ -1,0 +1,10 @@
+{
+  "name": "Lisa Chang",
+  "dob": "1983-09-22",
+  "diagnosis": "Asthma",
+  "insurance_number": "123-45-6789",
+  "appointment_time": "2025-05-10T09:30:00Z",
+  "notes": "Patient reports shortness of breath during physical activity",
+  "medications": ["Albuterol", "Fluticasone"],
+  "billing_codes": ["J45.909", "Z79.51"]
+}

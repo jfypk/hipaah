@@ -1,0 +1,35 @@
+{
+  "name": "hipaah",
+  "version": "0.1.0",
+  "description": "HIPAA-safe access control SDK for healthtech developers",
+  "main": "hipaah/index.js",
+  "types": "hipaah/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "build": "tsc",
+    "lint": "eslint hipaah"
+  },
+  "keywords": [
+    "hipaa",
+    "authorization",
+    "healthcare",
+    "security"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-node": "^29.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "node-fetch": "^2.6.7"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

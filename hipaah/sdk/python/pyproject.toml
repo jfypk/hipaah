@@ -1,0 +1,35 @@
+[project]
+name = "hipaah"
+version = "0.1.0"
+description = "HIPAA-safe access control SDK for healthtech developers"
+authors = [{ name = "Your Name", email = "your@email.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["hipaa", "authorization", "healthcare", "security"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "pyyaml >= 6.0"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest >= 7.0.0",
+    "pytest-cov >= 4.0.0",
+    "pytest-mock >= 3.10.0"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"
+addopts = "--verbose --cov=hipaah --cov-report=term-missing"
