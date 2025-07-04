@@ -282,7 +282,10 @@ We're just getting started and **we'd love your help**.
 
 ## 📜 License
 
-[MIT License](LICENSE)
+This project is dual-licensed under [MPL 2.0](LICENSE) for open source use and a commercial license for proprietary use.
+
+- **Open Source**: Use under MPL 2.0 terms
+- **Commercial**: Contact aventyrlabs@gmail.com for commercial licensing options
 
 ---
 
