@@ -152,7 +152,7 @@ HIPAah enforces proper access control while maintaining an audit trail of all ju
 git clone https://github.com/YOUR_USERNAME/hipaah.git
 cd hipaah
 poetry install
-cp .env.example .env
+cp env.example .env
 uvicorn hipaah.api.main:app --reload
 ```
 
