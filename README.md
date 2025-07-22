@@ -1,4 +1,4 @@
-# 🛡️ HIPAah
+# HIPAah
 
 **HIPAah** is an open-source, developer-first **authorization engine for HIPAA-compliant apps**.
 
@@ -6,28 +6,28 @@ It gives you fine-grained control over who can access which health data fields, 
 
 ---
 
-## 🚀 Why HIPAah?
+## Why HIPAah?
 
 If you're building in healthtech, you're either:
 
-- Manually coding access control logic 😩
-- Exposing PHI in logs 😱
-- Or delaying product launches over HIPAA compliance 🧯
+- Manually coding access control logic 
+- Exposing PHI in logs 
+- Or delaying product launches over HIPAA compliance 
 
 HIPAah solves all of that by giving you:
 
-- ✅ **RBAC + ABAC** policy enforcement
-- ✅ **Field-level access masking**
-- ✅ **Intent-based scopes** (treatment, billing, research, etc.)
-- ✅ **Time-limited justifications**
-- ✅ **Safe logging and audit trails**
-- ✅ **Screenshot Mode** with synthetic PHI
-- ✅ **LLM prompt masking and proxying**
-- ✅ All while **never touching actual PHI**
+-  **RBAC + ABAC** policy enforcement
+-  **Field-level access masking**
+-  **Intent-based scopes** (treatment, billing, research, etc.)
+-  **Time-limited justifications**
+-  **Safe logging and audit trails**
+-  **Screenshot Mode** with synthetic PHI
+-  **LLM prompt masking and proxying**
+-  All while **never touching actual PHI**
 
 ---
 
-## 🧠 Example Use Case
+## Example Use Case
 
 Your application has a billing admin who needs temporary access to a patient's insurance information:
 
@@ -115,38 +115,38 @@ HIPAah enforces proper access control while maintaining an audit trail of all ju
 
 ---
 
-## 🧩 Core Features
+## Core Features
 
-### 🔐 Access Control
+### Access Control
 - [x] Role-Based Access Control (RBAC)
 - [x] Attribute-Based Access Control (ABAC)
 - [x] Intent-based access scopes
 - [x] Time-limited justifications
 
-### 🧱 Developer Tools
+### Developer Tools
 - [x] YAML/JSON policy files
 - [ ] FastAPI-based PDP API (in progress)
 - [x] Python + JS SDKs
 - [ ] CLI to test and manage policies (in progress)
 
-### 📜 Audit + Logs
+### Audit + Logs
 - [x] Redacting logger
 - [x] Immutable audit log
 - [ ] Role-based log viewer (planned)
 
-### 🤖 AI + LLM Integration
+### AI + LLM Integration
 - [x] PHI masking for prompts
 - [x] Response scrubber
 - [ ] OpenAI proxy (planned)
 
-### 🖼️ Screenshot Mode
+### Screenshot Mode
 - [x] Toggle for fake-PHI display
 - [x] Synthetic data generation (using built-in generator)
 - [x] Visual watermarking
 
 ---
 
-## 📦 Installation (Dev Mode)
+## Installation (Dev Mode)
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/hipaah.git
@@ -228,7 +228,7 @@ synthetic_patient = generate_demo_patient()
 
 ---
 
-## 🛠️ Project Layout
+## Project Layout
 
 ```plaintext
 .
@@ -270,7 +270,7 @@ synthetic_patient = generate_demo_patient()
 
 ---
 
-## 💬 Community + Contributing
+## Community + Contributing
 
 We're just getting started and **we'd love your help**.
 
@@ -280,7 +280,7 @@ We're just getting started and **we'd love your help**.
 
 ---
 
-## 📜 License
+## License
 
 This project is dual-licensed under [MPL 2.0](LICENSE) for open source use and a commercial license for proprietary use.
 
@@ -289,7 +289,7 @@ This project is dual-licensed under [MPL 2.0](LICENSE) for open source use and a
 
 ---
 
-## ❤️ Built for...
+## Built for...
 
 - Healthtech hackers
 - Devs building HIPAA MVPs
