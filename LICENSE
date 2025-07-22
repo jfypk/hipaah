@@ -1,10 +1,41 @@
-Dual License: MPL 2.0 / Commercial
+DUAL LICENSE: MPL 2.0 / COMMERCIAL
 
-Copyright (c) 2025 Jeff Park
+Copyright (c) 2025 Aventyr Labs LLC. All rights reserved.
 
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at https://mozilla.org/MPL/2.0/.
+================================================================================
+OPEN SOURCE LICENSE (Mozilla Public License 2.0)
+================================================================================
 
-Alternatively, you may use this file under the terms of a commercial license.
-For commercial licensing options, please contact: aventyrlabs@gmail.com
+This Source Code Form is subject to the terms of the Mozilla Public License, 
+v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+obtain one at https://mozilla.org/MPL/2.0/.
+
+Under the MPL 2.0:
+- You may use, modify, and distribute this software
+- You must preserve copyright notices and license information
+- Modified files must include notices of changes
+- Source code of modified MPL-licensed files must remain available under MPL 2.0
+- You may combine MPL code with code under other licenses in larger works
+
+================================================================================
+COMMERCIAL LICENSE
+================================================================================
+
+For commercial use that requires:
+- Proprietary modifications without source code disclosure
+- Integration into commercial products without MPL obligations
+- Custom licensing terms or additional rights
+- Commercial support and warranties
+
+Contact us for commercial licensing: aventyrlabs@gmail.com
+
+================================================================================
+LICENSE CHOICE
+================================================================================
+
+You may choose to use this software under EITHER:
+1. The Mozilla Public License 2.0 (open source), OR
+2. A separate commercial license agreement
+
+You cannot use this software if you do not comply with at least one of these 
+license options. Use of this software constitutes acceptance of these terms.
