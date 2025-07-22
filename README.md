@@ -153,12 +153,41 @@ git clone https://github.com/YOUR_USERNAME/hipaah.git
 cd hipaah
 poetry install
 cp env.example .env
-uvicorn hipaah.api.main:app --reload
 ```
 
-To try the CLI (when available):
+### Using the CLI
+
+Test policies against sample data:
 
 ```bash
+# Test a doctor accessing treatment data
+poetry run hipaah \
+  --role doctor \
+  --intent treatment \
+  config/sample_policies/example_policy.yaml \
+  config/schemas/sample_patient.json
+
+# [INFO] Access decision {'name': 'Lisa Chang', 'dob': '1983-09-22', 'diagnosis': 'Asthma', 'medications': ['Albuterol', 'Fluticasone'], 'insurance_number': '123-45-6789', 'appointment_time': '2023-05-15T10:30:00Z', 'notes': 'Patient reports increased shortness of breath'}
+
+# Test a nurse assessing treatment data
+poetry run hipaah \
+  --role nurse \
+  --intent treatment \
+  config/sample_policies/example_policy.yaml \
+  config/schemas/sample_patient.json
+
+# [INFO] Access decision {'name': 'Lisa Chang', 'dob': '1983-09-22', 'diagnosis': 'Asthma', 'medications': ['Albuterol', 'Fluticasone'], 'insurance_number': '***', 'appointment_time': '2023-05-15T10:30:00Z', 'notes': 'Patient reports increased shortness of breath'}
+
+# Test a nurse assessing treatment data
+poetry run hipaah \
+  --role billing_admin \
+  --intent treatment \
+  config/sample_policies/example_policy.yaml \
+  config/schemas/sample_patient.json
+
+# [INFO] Access decision {}
+
+# View help
 poetry run hipaah --help
 ```
 
